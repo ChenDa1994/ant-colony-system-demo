@@ -60,7 +60,6 @@ classdef Ant < handle
             
             qr = rand();
             if qr <= q
-                probabilities = tao(currentCity, notVisitedCity) .* (eta(currentCity, notVisitedCity) .^ beta);
                 chosenCity = notVisitedCity( probabilities == max(probabilities) );
                 chosenCity = chosenCity(1);
                 obj.TabuList(chosenCity) = currentStep + 1;
@@ -76,11 +75,11 @@ classdef Ant < handle
                 obj.Steps = [obj.Steps; currentCity, chosenCity];
             end
             
-            %local pheromone
-%             delta_tao = gamma * max(tao(currentCity, notVisitedCity));
-            delta_tao = init_tao;
-            tao(currentCity, chosenCity) = (1 - rho) * tao(currentCity, chosenCity) + rho * delta_tao;
-            tao(chosenCity, currentCity) = (1 - rho) * tao(chosenCity, currentCity) + rho * delta_tao;
+            %local update
+            %delta_tao = gamma * max(tao(currentCity, notVisitedCity));
+            delta_tao = init_tao * rho;
+            tao(currentCity, chosenCity) = (1 - rho) * tao(currentCity, chosenCity) + delta_tao;
+            tao(chosenCity, currentCity) = (1 - rho) * tao(chosenCity, currentCity) + delta_tao;
         end
         
         function r = notAllVisited(obj)
@@ -94,7 +93,7 @@ classdef Ant < handle
                stepDistances(i) = distances(obj.Steps(i,1), obj.Steps(i,2)); 
             end
            
-            updateValue = 1 / sum(stepDistances) * alpha;
+            updateValue = (1 / sum(stepDistances)) * alpha;
             
             for i = 1 : length(obj.Steps)
                tao(obj.Steps(i,1), obj.Steps(i,2)) = (1-alpha) * tao(obj.Steps(i,1), obj.Steps(i,2)) + updateValue; 

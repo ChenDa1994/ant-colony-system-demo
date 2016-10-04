@@ -1,0 +1,19 @@
+function distance = heuristic( cities, distances) 
+    step = 1;
+    history = zeros(size(cities,1),1);
+    history(1) = step;
+    distance = 0;
+    
+    while ~isempty( history(history == 0) )
+        notVisitedCity = history(history == 0);
+        currentCity = history
+        notVisitedDist = distances(step, notVisitedCity) ;
+        min_distance = min( notVisitedDist  );
+        chosenCity = notVisitedCity(minVisitedDist == min_distance);
+        chosenCity = chosenCity(1);
+        step = step + 1;
+        history(chosenCity) = step + step;
+        distance = distance + min_distance;
+    end
+end
+
