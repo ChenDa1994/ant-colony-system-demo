@@ -1,4 +1,4 @@
-function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, init_tao, gamma, hObject, handles)
+function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, hObject, handles)
     %euclidean distance antar kota (kota i,j)
     distances = round( squareform(pdist(cities)) );
     eta = 1 ./ distances;
