@@ -8,9 +8,11 @@ function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, hObject, han
     drawnow;
     
     rng('shuffle');
-
+    
+    lnn = heuristic(cities, distances);
+    init_tao = 1 / (lnn * size(cities,1));
     %inisialisasi tao kota i,j
-    tao = eye(length(cities));
+    tao = eye(size(cities,1));
     tao(tao~=1) = init_tao;
     tao(tao==1) = 0;
 
@@ -45,9 +47,20 @@ function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, hObject, han
            distance = distance_;
            steps = steps_;
         end
-                
+             
+        %iteration best update
         tao = ants(shortestAnt).globalUpdatePheromones(tao, distances, alpha);
         
+        %global best update
+%         updateValue = (1 / distance) * alpha;
+% 
+%         for i = 1 : length(steps)
+%            tao(steps(i,1), steps(i,2)) = (1 - alpha) * tao(steps(i,1), steps(i,2)) + updateValue; 
+%            tao(steps(i,2), steps(i,1)) = (1 - alpha) * tao(steps(i,2), steps(i,1)) + updateValue; 
+%         end
+        %end of elitist ant
+
+
         fprintf('cycle: %d/%d, current shortest distance: %f, current distance: %f\n', cycle, max_cycle, distance, distance_);
 
         best_distances(cycle) = distance;
