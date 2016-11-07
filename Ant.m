@@ -30,9 +30,9 @@ classdef Ant < handle
             obj.TabuList(obj.TabuList~=1) = 0;
         end
         
-        function tao = travel(obj, tao, eta, beta, q, rho, gamma, init_tao)
+        function tao = travel(obj, tao, eta, beta, q, rho, init_tao)
             while obj.notAllVisited()
-              tao = obj.nextCity(tao, eta, beta, q, rho, gamma, init_tao);
+              tao = obj.nextCity(tao, eta, beta, q, rho, init_tao);
             end
    
             lastCity = find(obj.TabuList == max(obj.TabuList));
@@ -40,7 +40,7 @@ classdef Ant < handle
             obj.Steps = [obj.Steps; lastCity, firstCity];
         end
         
-        function tao = nextCity(obj, tao, eta, beta, q, rho, gamma, init_tao)
+        function tao = nextCity(obj, tao, eta, beta, q, rho, init_tao)
             currentStep = max(obj.TabuList);
             if currentStep == 0
                 obj.randomStartPosition();
@@ -97,7 +97,7 @@ classdef Ant < handle
             
             for i = 1 : length(obj.Steps)
                tao(obj.Steps(i,1), obj.Steps(i,2)) = (1-alpha) * tao(obj.Steps(i,1), obj.Steps(i,2)) + updateValue; 
-               tao(obj.Steps(i,2), obj.Steps(i,1)) = (1-alpha) *tao(obj.Steps(i,2), obj.Steps(i,1)) + updateValue; 
+               tao(obj.Steps(i,2), obj.Steps(i,1)) = tao(obj.Steps(i,1), obj.Steps(i,2)); 
             end
         end
     end

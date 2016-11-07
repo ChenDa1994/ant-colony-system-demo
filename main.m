@@ -31,7 +31,7 @@ function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, hObject, han
     steps = [];
     best_distances = zeros(max_cycle, 1);
     result_distances = zeros(max_cycle, 1);
-
+    last_reset = -1;
     cycle = 1;
     while cycle <= max_cycle
         fl = get(handles.chkFinishNow, 'Value');
@@ -39,7 +39,7 @@ function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, hObject, han
             break
         end
         for i = 1 : length(ants)
-           tao = ants(i).travel(tao, eta, beta, q, rho, gamma, init_tao);
+           tao = ants(i).travel(tao, eta, beta, q, rho, init_tao);
         end
 
         [steps_, distance_, stdDistances, shortestAnt] = currentShortest(ants, distances);
@@ -50,22 +50,37 @@ function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, hObject, han
              
         %iteration best update
         tao = ants(shortestAnt).globalUpdatePheromones(tao, distances, alpha);
-        
+
         %global best update
 %         updateValue = (1 / distance) * alpha;
 % 
 %         for i = 1 : length(steps)
 %            tao(steps(i,1), steps(i,2)) = (1 - alpha) * tao(steps(i,1), steps(i,2)) + updateValue; 
-%            tao(steps(i,2), steps(i,1)) = (1 - alpha) * tao(steps(i,2), steps(i,1)) + updateValue; 
+%            tao(steps(i,2), steps(i,1)) = tao(steps(i,1), steps(i,2)); 
 %         end
-        %end of elitist ant
-
-
         fprintf('cycle: %d/%d, current shortest distance: %f, current distance: %f\n', cycle, max_cycle, distance, distance_);
 
         best_distances(cycle) = distance;
         result_distances(cycle) = stdDistances;
-
+        
+%       resetting tao
+%         if cycle > 200 && cycle - last_reset > 200
+%             if mean(best_distances( (cycle-200) : cycle) ) == best_distances(cycle)
+%                 tao = eye(size(cities,1));
+%                 tao(tao~=1) = init_tao;
+%                 tao(tao==1) = 0;
+%                 
+%                 %global best update
+%                 updateValue = (1 / distance) * alpha;
+% 
+%                 for i = 1 : length(steps)
+%                    tao(steps(i,1), steps(i,2)) = (1 - alpha) * tao(steps(i,1), steps(i,2)) + updateValue; 
+%                    tao(steps(i,2), steps(i,1)) = tao(steps(i,1), steps(i,2)); 
+%                 end
+%                 last_reset = cycle;
+%             end
+%         end
+        
         if mod(cycle, 10) == 0
             cla;
             
@@ -102,18 +117,6 @@ function main(cities, alpha, beta, rho, q, ant_quantity, max_cycle, hObject, han
         cycle = cycle + 1;
     end
 
-    plot(1:cycle, best_distances(1:cycle), 'parent', handles.axes1);
-    axis([0 cycle min(best_distances(best_distances > 0))-100 max(best_distances(2:end))+100]);
-    guidata(hObject, handles);
-
-    handles = guidata(hObject);
-    plot(1:cycle, result_distances(1:cycle), 'parent', handles.axes6);
-    axis([0 cycle min(result_distances(result_distances > 0))-100 max(result_distances(2:end))+100]);
-    guidata(hObject, handles);
-
-    set( handles.text11,'string', sprintf('best distance:%d',distance));
-
-    drawnow;
     disp(steps);
     disp(distance);
 end
